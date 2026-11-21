@@ -43,6 +43,26 @@
 .sa-edit-grid input,.sa-edit-grid textarea,.sa-edit-grid select{width:100%;border:1px solid #8994a8;border-radius:7px;padding:9px 10px;background:#fff;color:#172033;min-height:38px}
 .sa-edit-grid textarea{min-height:85px;resize:vertical}
 .sa-modal-error{min-height:16px;color:#d94b62;font-size:11px;margin-top:8px}
+  .top-logo {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 100%;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .top-logo {
+        width: 50px;
+        height: 50px;
+      border-radius:100%;
+        top: 8px;
+        right: 10px;
+    }
+}
 @media(max-width:480px){.sa-modal-card{padding:15px}.sa-details{grid-template-columns:1fr}.sa-detail.full{grid-column:auto}.sa-modal-actions>*{flex:1}}
 
 </style>
@@ -53,7 +73,7 @@
 <a href="./dashboard.html" data-icon="▦">▦ <span>My dashboard</span></a>
 </nav><div class="recent-title">RECENT PROMOTIONS</div><div class="recent" id="recentList">Connecting…</div></aside>
 <main class="main">
-  <div class="intro"><div><h2>Create a promotion</h2></div></div>
+  <div class="intro"><div><h2>Create a promotion</h2></div></div> <img src="./L.jpeg" alt="Logo" class="top-logo">
   <div class="top"><div><div class="id">Browser ID · <strong id="browserIdLabel">Loading…</strong></div></div></div>
 <div class="content">
 <section class="panel"><form id="productForm"><div class="form-grid"><div><h3 class="section-title">01 · Product details</h3><div class="fields">
