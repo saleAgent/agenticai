@@ -11,7 +11,10 @@
 <button class="btn" id="loginBtn">Load my promotions →</button><p id="loginStatus" class="status"></p></section>
 <section class="card hidden" id="results"><div class="section-head"><div><h2>Your products</h2><p class="muted" id="resultInfo"></p></div><div class="links"><a href="./index.html">＋ Create another</a><button class="btn alt" id="logoutBtn" type="button">Change account</button></div></div><div class="products" id="productList"></div></section>
 </main>
-<script type="module">
+  <h5 style="display:flex; margin:auto; align-items:center;">Complete you payment process</h5>
+<hr style="width:80%; display:flex; margin:auto;align-items:center;"><br>
+  <img src="M.jpeg" width="450px" height="400px" style="margin-left:50px;">
+  <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getFirestore,collection,getDocs,query,where,doc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import{getAuth,onAuthStateChanged,signInAnonymously,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
