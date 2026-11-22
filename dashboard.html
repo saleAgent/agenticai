@@ -32,6 +32,130 @@
     border: 1px solid #f1cbd2;
 }
 
+/* CUSTOM EDIT MODAL */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(12, 22, 45, .58);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    overflow-y: auto;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.hidden {
+    display: none !important;
+}
+
+.edit-modal {
+    width: 100%;
+    max-width: 440px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 20px 65px rgba(0,0,0,.2);
+    animation: modalShow .22s ease;
+    margin: auto;
+}
+
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 17px;
+}
+
+.modal-header h2 {
+    font-size: 19px;
+    margin: 0;
+    color: #172033;
+}
+
+.modal-header p {
+    font-size: 11px;
+    color: #6b768b;
+    margin: 5px 0 0;
+}
+
+.close-modal {
+    border: none;
+    background: #f1f3f8;
+    color: #526078;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.modal-field {
+    margin-bottom: 13px;
+}
+
+.modal-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 750;
+    color: #536078;
+    margin-bottom: 6px;
+}
+
+.modal-field input,
+.modal-field textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #dce3ed;
+    border-radius: 8px;
+    background: #fbfcfe;
+    font: inherit;
+    font-size: 12px;
+    color: #172033;
+    outline: none;
+}
+
+.modal-field textarea {
+    resize: vertical;
+}
+
+.modal-field input:focus,
+.modal-field textarea:focus {
+    border-color: #8095ef;
+    box-shadow: 0 0 0 3px #4568e814;
+    background: #fff;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.modal-actions button {
+    flex: 1;
+    cursor: pointer;
+}
+
+@media(max-width:480px) {
+    .edit-modal {
+        padding: 16px;
+    }
+}
+
 </style></head><body><main class="wrap"><header class="head"><nav class="links"><a href="./index.html">＋ New promotion</a></nav></header>
 
 <section class="card login" id="loginBox"><h2>Access your workspace</h2><p class="muted">Sign in with the mobile number and Browser ID used when you submitted your product. Use the same browser profile.</p>
@@ -40,6 +164,69 @@
 <button class="btn" id="loginBtn">Load my promotions →</button><p id="loginStatus" class="status"></p></section>
 <section class="card hidden" id="results"><div class="section-head"><div><h2>Your products</h2><p class="muted" id="resultInfo"></p></div><div class="links"><a href="./index.html">＋ Create another</a><button class="btn alt" id="logoutBtn" type="button">Change account</button></div></div><div class="products" id="productList"></div></section>
 </main>
+    
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal-overlay hidden" id="editModal">
+
+    <div class="edit-modal">
+
+        <div class="modal-header">
+            <div>
+                <h2>Edit Product</h2>
+                <p>Update your promotion details</p>
+            </div>
+
+            <button type="button" class="close-modal" id="closeModal">
+                &times;
+            </button>
+        </div>
+
+        <form id="editForm">
+
+            <input type="hidden" id="editProductId">
+
+            <div class="modal-field">
+                <label>Product Name</label>
+                <input type="text" id="editName" required>
+            </div>
+
+            <div class="modal-field">
+                <label>Product Description</label>
+                <textarea id="editDescription" rows="3" required></textarea>
+            </div>
+
+            <div class="modal-field">
+                <label>Plan Amount (₹)</label>
+                <input type="number" id="editPlan" min="1" required>
+            </div>
+
+            <div class="modal-field">
+                <label>Location</label>
+                <input type="text" id="editLocation">
+            </div>
+
+            <div class="modal-field">
+                <label>Promotion Radius (KM)</label>
+                <input type="number" id="editRadius" min="0">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn alt" id="cancelEdit">
+                    Cancel
+                </button>
+
+                <button type="submit" class="btn" id="saveEdit">
+                    Save Changes
+                </button>
+            </div>
+
+            <p id="editStatus" class="status"></p>
+
+        </form>
+
+    </div>
+</div>
+
   <h5 style="margin-left:50px;">Complete you payment process</h5><br>
   <img src="M.jpeg" width="450px" height="400px" style="margin-left:50px;"><br>
   <span style="margin-left:50px;">24*7 helpline +91 8391895173</span><br>
@@ -65,6 +252,115 @@ function setStatus(s,err=false){$("loginStatus").textContent=s;$("loginStatus").
 async function init(){await setPersistence(auth,browserLocalPersistence);user=await new Promise(resolve=>{const unsub=onAuthStateChanged(auth,u=>{unsub();resolve(u)})});if(!user)user=(await signInAnonymously(auth)).user}
 function safeText(value){return String(value??"")}
 let loadedProducts=[];
+      
+// OPEN EDIT MODAL
+
+function openEditModal(p) {
+
+    $("editProductId").value = p.id;
+    $("editName").value = p.productName || "";
+    $("editDescription").value = p.description || "";
+    $("editPlan").value = p.plan || "";
+    $("editLocation").value = p.location || "";
+    $("editRadius").value = p.radius || "";
+
+    $("editStatus").textContent = "";
+
+    $("editModal").classList.remove("hidden");
+}
+
+// CLOSE EDIT MODAL
+
+function closeEditModal() {
+    $("editModal").classList.add("hidden");
+}
+
+$("closeModal").addEventListener("click", closeEditModal);
+$("cancelEdit").addEventListener("click", closeEditModal);
+
+// CLICK OUTSIDE TO CLOSE
+
+$("editModal").addEventListener("click", e => {
+    if (e.target === $("editModal")) {
+        closeEditModal();
+    }
+});
+
+// SAVE PRODUCT CHANGES
+
+$("editForm").addEventListener("submit", async e => {
+
+    e.preventDefault();
+
+    const id = $("editProductId").value;
+
+    const name = $("editName").value.trim();
+    const description = $("editDescription").value.trim();
+    const plan = Number($("editPlan").value);
+    const location = $("editLocation").value.trim();
+    const radius = Number($("editRadius").value);
+
+    if (!name || !description || !Number.isFinite(plan) || plan <= 0) {
+        $("editStatus").textContent = "Please enter valid product details.";
+        $("editStatus").className = "status error";
+        return;
+    }
+
+    if (!Number.isFinite(radius) || radius < 0) {
+        $("editStatus").textContent = "Enter a valid promotion radius.";
+        $("editStatus").className = "status error";
+        return;
+    }
+
+    const saveBtn = $("saveEdit");
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+
+    try {
+
+        const updatedData = {
+            productName: name,
+            description: description,
+            plan: plan,
+            location: location,
+            radius: radius
+        };
+
+        await updateDoc(
+            doc(db, "products", id),
+            updatedData
+        );
+
+        const next = loadedProducts.map(p =>
+            p.id === id ? { ...p, ...updatedData } : p
+        );
+
+        render(next);
+
+        $("resultInfo").textContent =
+            `Found ${next.length} product(s).`;
+
+        closeEditModal();
+
+        setStatus("Product updated successfully!");
+
+    } catch (error) {
+
+        console.error(error);
+
+        $("editStatus").textContent =
+            "Update failed: " + error.message;
+
+        $("editStatus").className = "status error";
+
+    } finally {
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Changes";
+    }
+});
+
 function render(items) {
     loadedProducts = items;
 
