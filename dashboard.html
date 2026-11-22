@@ -230,7 +230,7 @@
   <h5 style="margin-left:50px;">Complete you payment process</h5><br>
   <img src="M.jpeg" width="450px" height="400px" style="margin-left:50px;"><br>
   <span style="margin-left:50px;">24*7 helpline +91 8391895173</span><br>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{
@@ -425,6 +425,74 @@ function render(items) {
             (p.radius ? ` · ${p.radius} km radius` : "");
 
         card.append(loc);
+
+// REAL UPI PAYMENT QR CODE
+
+const qrSection = document.createElement("div");
+
+qrSection.style.cssText = `
+    margin-top:12px;
+    padding:12px;
+    background:#f8faff;
+    border:1px solid #e3e8f1;
+    border-radius:10px;
+    text-align:center;
+`;
+
+const qrTitle = document.createElement("p");
+qrTitle.textContent = `Scan & Pay ₹${Number(p.plan || 0)}`;
+qrTitle.style.cssText = `
+    font-weight:800;
+    font-size:14px;
+    margin:0 0 10px;
+`;
+
+const qrBox = document.createElement("div");
+qrBox.style.cssText = `
+    display:flex;
+    justify-content:center;
+    background:white;
+    padding:10px;
+    border-radius:8px;
+    width:max-content;
+    margin:auto;
+`;
+
+const qrNote = document.createElement("p");
+qrNote.textContent = "Scan using PhonePe or another UPI app";
+qrNote.style.cssText = `
+    font-size:10px;
+    color:#6b768b;
+    margin:9px 0 0;
+`;
+
+const amount = Number(p.plan || 0);
+
+if (amount > 0 && window.QRCode) {
+
+    const upiLink = new URLSearchParams({
+        pa: "s9382085005j.indian@axl",
+        pn: "Mr Subrata Jana",
+        am: amount.toFixed(2),
+        cu: "INR",
+        tn: `SalesAgent ${p.productName || "Promotion"}`
+    });
+
+    const paymentURI = "upi://pay?" + upiLink.toString();
+
+    new QRCode(qrBox, {
+        text: paymentURI,
+        width: 170,
+        height: 170,
+        correctLevel: QRCode.CorrectLevel.M
+    });
+
+} else {
+    qrBox.textContent = "QR unavailable";
+}
+
+qrSection.append(qrTitle, qrBox, qrNote);
+card.append(qrSection);
 
         // Action Buttons
         const actions = document.createElement("div");
