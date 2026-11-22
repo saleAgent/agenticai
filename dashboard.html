@@ -431,98 +431,19 @@ function render(items) {
         actions.className = "actions";
 
         // EDIT BUTTON
-        const edit = document.createElement("button");
+        // EDIT BUTTON
 
-        edit.type = "button";
-        edit.className = "btn alt";
-        edit.textContent = "✏ Edit";
+const edit = document.createElement("button");
 
-        edit.addEventListener("click", async () => {
+edit.type = "button";
+edit.className = "btn alt";
+edit.textContent = "✏ Edit";
 
-            const name = prompt("Product name:", p.productName || "");
-            if (name === null) return;
+edit.addEventListener("click", () => {
+    openEditModal(p);
+});
 
-            const description = prompt(
-                "Product description:",
-                p.description || ""
-            );
-            if (description === null) return;
-
-            const planInput = prompt(
-                "Promotion plan amount (₹):",
-                p.plan || ""
-            );
-            if (planInput === null) return;
-
-            const plan = Number(planInput);
-
-            if (!Number.isFinite(plan) || plan <= 0) {
-                alert("Please enter a valid plan amount.");
-                return;
-            }
-
-            const location = prompt(
-                "Product location:",
-                p.location || ""
-            );
-            if (location === null) return;
-
-            const radiusInput = prompt(
-                "Promotion radius (KM):",
-                p.radius || ""
-            );
-            if (radiusInput === null) return;
-
-            const radius = Number(radiusInput);
-
-            if (!Number.isFinite(radius) || radius < 0) {
-                alert("Please enter a valid radius.");
-                return;
-            }
-
-            edit.disabled = true;
-            edit.textContent = "Updating...";
-
-            try {
-
-                const updatedData = {
-                    productName: name.trim(),
-                    description: description.trim(),
-                    plan: plan,
-                    location: location.trim(),
-                    radius: radius
-                };
-
-                await updateDoc(
-                    doc(db, "products", p.id),
-                    updatedData
-                );
-
-                const next = loadedProducts.map(item =>
-                    item.id === p.id
-                        ? { ...item, ...updatedData }
-                        : item
-                );
-
-                render(next);
-
-                $("resultInfo").textContent =
-                    `Found ${next.length} product(s).`;
-
-                setStatus("Product updated successfully!");
-
-            } catch (e) {
-
-                console.error(e);
-                alert("Update failed: " + e.message);
-
-                edit.disabled = false;
-                edit.textContent = "✏ Edit";
-            }
-        });
-
-        actions.append(edit);
-
+actions.append(edit);
         // DELETE BUTTON
         const del = document.createElement("button");
 
